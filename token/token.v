@@ -125,6 +125,8 @@ pub enum Kind {
 	comma
 	colon
 	ident
+	paren_l
+	paren_r
 }
 
 pub struct Token {
@@ -137,7 +139,7 @@ pub struct Token {
 [direct_array_access]
 pub fn tokenize(file string) []Token {
 
-	mut number_regex := regex.regex_opt('^[0-9A-Fa-f][0-9A-Fa-f]') or { panic('failed to construct regex') }
+	mut number_regex := regex.regex_opt('^([0-9A-Fa-f][0-9A-Fa-f]){1,2}') or { panic('failed to construct regex') }
     mut ident_regex  := regex.regex_opt('^_?[A-Za-z_]+') or { panic('failed to construct regex') }
 	mut comment_regex := regex.regex_opt('^;.+\n') or { panic('failed to construct regex') }
 
@@ -202,15 +204,27 @@ pub fn tokenize(file string) []Token {
 				idx++
 				continue
 			}
+			'(' {
+				tokens << Token{.paren_l, '(', row, col}
+				col++
+				idx++
+				continue
+			}
+			')' {
+				tokens << Token{.paren_r, '(', row, col}
+				col++
+				idx++
+				continue
+			}
 			else {}
 		}
 
 		// number literal
-		number_l, _ := number_regex.find(file[idx..idx+2])
+		number_l, number_r := number_regex.find(file[idx..idx+4])
 		if number_l > -1 {
-			tokens << Token{.literal, file[idx..idx+2], row, col}
-			col += 2
-			idx += 2
+			tokens << Token{.literal, file[idx..idx+numer_r], row, col}
+			col += number_r
+			idx += number_r
 			continue
 		}
 
