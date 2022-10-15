@@ -1,6 +1,7 @@
 module parse
 
 pub enum AddressingMode {
+	no
 	accumulator // only A
 	immediate // #$nn
 	implied // no operand

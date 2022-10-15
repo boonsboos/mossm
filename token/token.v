@@ -130,6 +130,7 @@ pub enum Kind {
 	paren_l
 	paren_r
 	// registers
+	a
 	x
 	y
 }
@@ -218,6 +219,12 @@ pub fn tokenize(file string) []Token {
 			}
 			')' {
 				tokens << Token{.paren_r, '(', row, col}
+				col++
+				idx++
+				continue
+			}
+			'A' {
+				tokens << Token{.a, 'A', row, col}
 				col++
 				idx++
 				continue

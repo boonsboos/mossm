@@ -13,5 +13,6 @@ pub:
 	mode     AddressingMode
 	inst     token.Kind
 	operand  u16
-	operand2 u8 // 0 == X, 1 == Y
+	register u8 // 0 == X, 1 == Y
+	label    string
 }

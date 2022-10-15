@@ -28,7 +28,7 @@ pub fn parse(tokens []token.Token) []Node {
 
 		// for instructions of length 1 (only itself)
 		if tokens[idx].inst in length_1 {
-			nodes << Node{.instruction, .implied, tokens[idx].inst, 0, 0} // 0, 0 because no operands.
+			nodes << Node{.instruction, .implied, tokens[idx].inst, 0, 0, ''} // 0, 0 because no operands.
 			idx++
 			continue
 		}
@@ -53,9 +53,39 @@ pub fn parse(tokens []token.Token) []Node {
 				.immediate,
 				tokens[idx].inst,
 				decode_hex_string(tokens[idx+3].real),
-				0
+				0,
+				''
 			}
 			idx += 4
+			continue
+		}
+
+		// this has to be absolute or relative addressing.
+		// but this time, with a label
+		if tokens[idx+1].inst == .ident {
+			nodes << Node{
+				.instruction,
+				.absolute,
+				tokens[idx].inst,
+				0,
+				0,
+				tokens[idx+1].real
+			}
+			idx += 2
+			continue
+		}
+
+		// accumulator addressing
+		if tokens[idx+1].inst == .a {
+			nodes << Node{
+				.instruction,
+				.accumulator,
+				tokens[idx].inst,
+				0,
+				0,
+				''
+			}
+			idx += 2
 			continue
 		}
 
@@ -82,7 +112,8 @@ pub fn parse(tokens []token.Token) []Node {
 						.index_zero_page,
 						tokens[idx].inst,
 						decode_hex_string(tokens[idx+2].real),
-						u8(register)
+						u8(register),
+						''
 					}
 					idx += 5
 					continue
@@ -94,7 +125,8 @@ pub fn parse(tokens []token.Token) []Node {
 					.zero_page,
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
-					0
+					0,
+					''
 				}
 				idx += 3
 				continue
@@ -107,8 +139,9 @@ pub fn parse(tokens []token.Token) []Node {
 					.instruction,
 					.absolute,
 					tokens[idx].inst,
-					decode_hex_string(tokens[idx+3].real),
-					0
+					decode_hex_string(tokens[idx+2].real),
+					0,
+					''
 				}
 				idx += 3
 				continue
@@ -127,7 +160,8 @@ pub fn parse(tokens []token.Token) []Node {
 				.index_absolute,
 				tokens[idx].inst,
 				decode_hex_string(tokens[idx+3].real),
-				register
+				register,
+				''
 			}
 			idx += 5
 			continue
@@ -155,7 +189,8 @@ pub fn parse(tokens []token.Token) []Node {
 					.absolute_indirect,
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
-					0
+					0,
+					''
 				}
 				idx += 5
 				continue
@@ -177,7 +212,8 @@ pub fn parse(tokens []token.Token) []Node {
 					.xzero_page_indirect,
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
-					0
+					0,
+					''
 				}
 				idx += 7
 				continue
@@ -197,7 +233,8 @@ pub fn parse(tokens []token.Token) []Node {
 					.xzero_page_indirect,
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
-					0
+					0,
+					''
 				}
 				idx += 7
 				continue
@@ -213,6 +250,18 @@ pub fn parse(tokens []token.Token) []Node {
 				eprintln("${tokens[idx+1].row}:${tokens[idx+1].col} expected a colon (:), but found a `${tokens[idx+1].inst}` instead")
 				parse_error++
 			}
+
+			nodes << Node {
+				.label,
+				.no,
+				.ident,
+				0,
+				0,
+				tokens[idx].real
+			}
+
+			idx += 2
+			continue
 		}
 	
 	} 
@@ -227,7 +276,9 @@ pub fn parse(tokens []token.Token) []Node {
 // the stupidest function you will ever see
 [inline;direct_array_access]
 fn decode_hex_string(a string) u16 {
-	return binary.big_endian_u16(
-		hex.decode(a) or { panic('illegal hexadecimal number found') }
-	)
+	mut b := hex.decode(a) or { panic('illegal hexadecimal number found') }
+	if b.len == 1 {
+		b.prepend(u8(0x00))
+	}
+	return binary.big_endian_u16(b)
 }
