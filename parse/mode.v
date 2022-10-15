@@ -1,12 +1,14 @@
 module parse
 
 pub enum AddressingMode {
-	immediate
-	absolute
-	xabsolute
-	yabsolute
-	zero_page
-	xzero_page
-	xzero_page_indirect
-	yindirect_zero_page
+	accumulator // only A
+	immediate // #$nn
+	implied // no operand
+	absolute // $nnnn
+	index_absolute // $nnnn,X|Y
+	absolute_indirect // ($nnnn)
+	zero_page // $nn
+	index_zero_page // $nn,X|Y
+	xzero_page_indirect // ($nn,X)
+	yindirect_zero_page // ($nn),Y
 }

@@ -29,6 +29,7 @@ const keyword_map = {
 	"INC" : .inc
 	"INX" : .inx
 	"INY" : .iny
+	"JAM" : .kil // same thing
 	"JMP" : .jmp
 	"JSR" : .jsr
 	"KIL" : .kil
@@ -88,6 +89,7 @@ pub enum Kind {
 	inc
 	inx
 	iny
+	jam // same as kil
 	jmp
 	jsr
 	kil
@@ -127,9 +129,13 @@ pub enum Kind {
 	ident
 	paren_l
 	paren_r
+	// registers
+	x
+	y
 }
 
 pub struct Token {
+pub:
 	inst Kind
 	real string
 	row int
@@ -216,13 +222,25 @@ pub fn tokenize(file string) []Token {
 				idx++
 				continue
 			}
+			'X' {
+				tokens << Token{.x, 'X', row, col}
+				col++
+				idx++
+				continue
+			}
+			'Y' {
+				tokens << Token{.y, 'Y', row, col}
+				col++
+				idx++
+				continue
+			}
 			else {}
 		}
 
 		// number literal
 		number_l, number_r := number_regex.find(file[idx..idx+4])
 		if number_l > -1 {
-			tokens << Token{.literal, file[idx..idx+numer_r], row, col}
+			tokens << Token{.literal, file[idx..idx+number_r], row, col}
 			col += number_r
 			idx += number_r
 			continue
