@@ -22,6 +22,10 @@ pub fn parse(tokens []token.Token) []Node {
 
 	for idx < tokens.len {
 
+		//
+		// PARSE INSTRUCTIONS
+		//
+
 		// for instructions of length 1 (only itself)
 		if tokens[idx].inst in length_1 {
 			nodes << Node{.instruction, .implied, tokens[idx].inst, 0, 0} // 0, 0 because no operands.
@@ -160,9 +164,54 @@ pub fn parse(tokens []token.Token) []Node {
 			// x-indexed zero page indirect
 			if tokens[idx+4].inst == .comma {
 				if tokens[idx+5].inst != .x {
-					eprintln("${tokens[idx+4].row}:${tokens[idx+4].col} expected a comma and X register, but found `${tokens[idx+4].inst}` instead")
+					eprintln("${tokens[idx+4].row+1}:${tokens[idx+4].col+1} expected the X register, but found `${tokens[idx+4].inst}` instead")
 					parse_error++
 				}
+				if tokens[idx+6].inst != .paren_r {
+					eprintln("${tokens[idx+5].row}:${tokens[idx+5].col} please close the parentheses.")
+					parse_error++
+				}
+
+				nodes << Node{
+					.instruction,
+					.xzero_page_indirect,
+					tokens[idx].inst,
+					decode_hex_string(tokens[idx+3].real),
+					0
+				}
+				idx += 7
+				continue
+
+			} else if tokens[idx+4].inst == .paren_r {
+				if tokens[idx+5].inst != .comma {
+					eprintln("${tokens[idx+4].row+1}:${tokens[idx+4].col+1} expected a comma, but found `${tokens[idx+4].inst}` instead")
+					parse_error++
+				}
+				if tokens[idx+6].inst != .y {
+					eprintln("${tokens[idx+5].row+1}:${tokens[idx+5].col+1} expected the X register, but found `${tokens[idx+5].inst}` instead")
+					parse_error++
+				}
+
+				nodes << Node{
+					.instruction,
+					.xzero_page_indirect,
+					tokens[idx].inst,
+					decode_hex_string(tokens[idx+3].real),
+					0
+				}
+				idx += 7
+				continue
+			}
+		}
+
+		//
+		// PARSE LABELS
+		//
+
+		if tokens[idx].inst == .ident {
+			if tokens[idx+1].inst != .colon {
+				eprintln("${tokens[idx+1].row}:${tokens[idx+1].col} expected a colon (:), but found a `${tokens[idx+1].inst}` instead")
+				parse_error++
 			}
 		}
 	
