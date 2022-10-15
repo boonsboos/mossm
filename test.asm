@@ -1,6 +1,6 @@
 ; this is a comment
 NOP
-testlabel:
+testlabel
 LDA #$FF
 LDA #$00
 LDA A

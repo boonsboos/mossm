@@ -4,6 +4,7 @@ import os
 
 import token
 import parse
+import check
 
 pub fn compile_file(filename string) {
 
@@ -13,7 +14,7 @@ pub fn compile_file(filename string) {
 	}
 
 	tokens := token.tokenize(file.replace('\r','') + '\n')
-	println(tokens)
 	nodes := parse.parse(tokens)
 	println(nodes)
+	check.check(nodes) // verify
 }

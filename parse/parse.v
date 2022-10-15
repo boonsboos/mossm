@@ -276,7 +276,7 @@ pub fn parse(tokens []token.Token) []Node {
 // the stupidest function you will ever see
 [inline;direct_array_access]
 fn decode_hex_string(a string) u16 {
-	mut b := hex.decode(a) or { panic('illegal hexadecimal number found') }
+	mut b := hex.decode(a) or { [u8(0x00), 0x00] }
 	if b.len == 1 {
 		b.prepend(u8(0x00))
 	}
