@@ -15,4 +15,6 @@ pub:
 	operand  u16
 	register u8 // 0 == X, 1 == Y
 	label    string
+	col int
+	row int
 }

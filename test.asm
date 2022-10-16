@@ -1,7 +1,7 @@
 ; this is a comment
 NOP
-testlabel
+testlabel:
 LDA #$FF
-LDA #$00
-LDA A
+LDY $00,Y
+LDY testa
 JMP testlabel

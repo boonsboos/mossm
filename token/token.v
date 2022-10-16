@@ -1,4 +1,5 @@
 module token
+// the actual tokenisation starts at line 148
 
 import regex
 
@@ -8,7 +9,7 @@ const keyword_map = {
 	"ASL" : .asl
 	"BCC" : .bcc
 	"BCS" : .bcs
-	"BEC" : .bec
+	"BEQ" : .beq
 	"BIT" : .bit 
 	"BMI" : .bmi
 	"BNE" : .bne
@@ -67,7 +68,7 @@ pub enum Kind {
 	asl
 	bcc
 	bcs
-	bec
+	beq
 	bit
 	bmi
 	bne
@@ -160,6 +161,7 @@ pub fn tokenize(file string) []Token {
 
 		if file[idx].ascii_str() == "\n" {
 			row++
+			col = 1
 			idx++
 			continue
 		}

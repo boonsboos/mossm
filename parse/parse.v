@@ -28,7 +28,7 @@ pub fn parse(tokens []token.Token) []Node {
 
 		// for instructions of length 1 (only itself)
 		if tokens[idx].inst in length_1 {
-			nodes << Node{.instruction, .implied, tokens[idx].inst, 0, 0, ''} // 0, 0 because no operands.
+			nodes << Node{.instruction, .implied, tokens[idx].inst, 0, 0, '', tokens[idx].col, tokens[idx].row} // 0, 0 because no operands.
 			idx++
 			continue
 		}
@@ -54,7 +54,9 @@ pub fn parse(tokens []token.Token) []Node {
 				tokens[idx].inst,
 				decode_hex_string(tokens[idx+3].real),
 				0,
-				''
+				'',
+				tokens[idx].col,
+				tokens[idx].row
 			}
 			idx += 4
 			continue
@@ -69,7 +71,9 @@ pub fn parse(tokens []token.Token) []Node {
 				tokens[idx].inst,
 				0,
 				0,
-				tokens[idx+1].real
+				tokens[idx+1].real,
+				tokens[idx].col,
+				tokens[idx].row
 			}
 			idx += 2
 			continue
@@ -83,7 +87,9 @@ pub fn parse(tokens []token.Token) []Node {
 				tokens[idx].inst,
 				0,
 				0,
-				''
+				'',
+				tokens[idx].col,
+				tokens[idx].row
 			}
 			idx += 2
 			continue
@@ -113,7 +119,9 @@ pub fn parse(tokens []token.Token) []Node {
 						tokens[idx].inst,
 						decode_hex_string(tokens[idx+2].real),
 						u8(register),
-						''
+						'',
+						tokens[idx].col,
+						tokens[idx].row
 					}
 					idx += 5
 					continue
@@ -126,7 +134,9 @@ pub fn parse(tokens []token.Token) []Node {
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
 					0,
-					''
+					'',
+					tokens[idx].col,
+					tokens[idx].row
 				}
 				idx += 3
 				continue
@@ -141,7 +151,9 @@ pub fn parse(tokens []token.Token) []Node {
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+2].real),
 					0,
-					''
+					'',
+					tokens[idx].col,
+					tokens[idx].row
 				}
 				idx += 3
 				continue
@@ -161,7 +173,9 @@ pub fn parse(tokens []token.Token) []Node {
 				tokens[idx].inst,
 				decode_hex_string(tokens[idx+3].real),
 				register,
-				''
+				'',
+				tokens[idx].col,
+				tokens[idx].row
 			}
 			idx += 5
 			continue
@@ -190,7 +204,9 @@ pub fn parse(tokens []token.Token) []Node {
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
 					0,
-					''
+					'',
+					tokens[idx].col,
+					tokens[idx].row
 				}
 				idx += 5
 				continue
@@ -213,7 +229,9 @@ pub fn parse(tokens []token.Token) []Node {
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
 					0,
-					''
+					'',
+					tokens[idx].col,
+					tokens[idx].row
 				}
 				idx += 7
 				continue
@@ -234,7 +252,9 @@ pub fn parse(tokens []token.Token) []Node {
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
 					0,
-					''
+					'',
+					tokens[idx].col,
+					tokens[idx].row
 				}
 				idx += 7
 				continue
@@ -257,7 +277,9 @@ pub fn parse(tokens []token.Token) []Node {
 				.ident,
 				0,
 				0,
-				tokens[idx].real
+				tokens[idx].real,
+				tokens[idx].col,
+				tokens[idx].row
 			}
 
 			idx += 2
