@@ -5,6 +5,7 @@ import os
 import token
 import parse
 import check
+import gen
 
 pub fn compile_file(filename string) {
 
@@ -16,4 +17,5 @@ pub fn compile_file(filename string) {
 	tokens := token.tokenize(file.replace('\r','') + '\n')
 	nodes := parse.parse(tokens)
 	check.check(nodes) // do some sort of typechecking
+	binary := gen.gen(nodes)
 }

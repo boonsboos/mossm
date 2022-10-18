@@ -10,7 +10,7 @@ const (
 	absolute_indirect = [token.Kind.jmp]
 	
 	immediate = [token.Kind.adc, .and, .cmp, .cpx, .cpy, .eor, .lda, .ldx, .ldy, .ora, .sbc]
-	// includes relative because they look the same
+	// includes relative because they look the same to the parser
 	absolute = [token.Kind.adc, .and, .asl, .bcc, .bcs, .beq, .bmi, .bne, .bpl, .bvc, .bvs, .bit, .cmp, .cpx, .cpy, .dec, .eor, .inc, .jmp, .jsr, .lda, .ldx, .ldy, .lsr, .ora, .rol, .ror, .sbc, .sta, .stx, .sty]
 	
 	xindex_absolute = [token.Kind.adc, .and, .asl, .cmp, .dec, .eor, .inc, .lda, .ldy, .lsr, .ora, .rol, .ror, .sbc, .sta]
@@ -24,17 +24,19 @@ const (
 	yindirect_zero = [token.Kind.adc, .and, .cmp, .eor, .lda, .ora, .sbc, .sta]
 )
 
+[direct_array_access]
 pub fn check(nodes []parse.Node) {
 	mut check_error := 0
 
 	mut labels := []string{}
+	labels << ''
 
 	for node in nodes {
 		if node.node == .label {
 			labels << node.label
 		}
 
-		if node.label !in labels && node.label != '' {
+		if node.label !in labels {
 			eprintln('${node.row}:${node.col} the label that is referred to does not exist')
 			check_error++
 		}

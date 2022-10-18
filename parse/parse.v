@@ -105,7 +105,7 @@ pub fn parse(tokens []token.Token) []Node {
 			// zero page
 			// $nn
 			if tokens[idx+2].real.len < 4 {
-				// X indexed zero page
+				// X and Y indexed zero page
 				if tokens[idx+3].inst == .comma {
 					if tokens[idx+4].inst !in [token.Kind.x, .y] {
 						eprintln("${tokens[idx+3].row}:${tokens[idx+3].col} expected the either the X or Y register, but found a ${tokens[idx+3].inst} instead")
@@ -118,7 +118,7 @@ pub fn parse(tokens []token.Token) []Node {
 						.index_zero_page,
 						tokens[idx].inst,
 						decode_hex_string(tokens[idx+2].real),
-						u8(register),
+						register,
 						'',
 						tokens[idx].col,
 						tokens[idx].row
@@ -236,7 +236,7 @@ pub fn parse(tokens []token.Token) []Node {
 				idx += 7
 				continue
 
-			} else if tokens[idx+4].inst == .paren_r {
+			} else if tokens[idx+4].inst == .paren_r { // Y INDEXED INDIRECT ZERO PAGE
 				if tokens[idx+5].inst != .comma {
 					eprintln("${tokens[idx+4].row+1}:${tokens[idx+4].col+1} expected a comma, but found `${tokens[idx+4].inst}` instead")
 					parse_error++
@@ -251,7 +251,7 @@ pub fn parse(tokens []token.Token) []Node {
 					.xzero_page_indirect,
 					tokens[idx].inst,
 					decode_hex_string(tokens[idx+3].real),
-					0,
+					1,
 					'',
 					tokens[idx].col,
 					tokens[idx].row
