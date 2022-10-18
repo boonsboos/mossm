@@ -351,9 +351,36 @@ struct Inst {
 	c u8 // register
 }
 
+struct Label {
+	a u16 // location
+	b string // name
+}
+
 [direct_array_access]
 pub fn gen(nodes []parse.Node) []u8 {
 	mut s := []u8{}
+	mut labels := []u16{}
+
+	for node in nodes {
+
+		if node.node == .label {
+			labels << Label {u16(s.len), node.label}
+			continue
+		}
+
+		if node.mode in [.absolute, .absolute_indirect, .index_absolute] && node.label != '' {
+			// we already know the label exists
+			for l in labels {
+				// if label.b matches node.label, the address becomes label.b
+			}
+		}
+
+	}
+
+	if s.len > (1 << 16) {
+		eprintln('your program is too big: expected a maximum of 65536 bytes but got ${s.len} bytes')
+		exit(1)
+	}
 
 	return s
 }
