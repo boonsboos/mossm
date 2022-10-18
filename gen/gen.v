@@ -232,7 +232,7 @@ const insts = [
 	// 0x5x
 	Inst{.bvc, .absolute, 0},
 	Inst{.eor, .yindirect_zero_page, 1},
-	Inst{.ero, .index_zero_page, 0},
+	Inst{.eor, .index_zero_page, 0},
 	Inst{.lsr, .index_zero_page, 0},
 	Inst{.cli, .implied, 0},
 	Inst{.eor, .index_absolute, 1},
@@ -359,20 +359,34 @@ struct Label {
 [direct_array_access]
 pub fn gen(nodes []parse.Node) []u8 {
 	mut s := []u8{}
-	mut labels := []u16{}
+	mut labels := []Label{}
 
 	for node in nodes {
+		
+		inst := Inst{node.inst, node.mode, node.register}
 
 		if node.node == .label {
 			labels << Label {u16(s.len), node.label}
 			continue
 		}
 
-		if node.mode in [.absolute, .absolute_indirect, .index_absolute] && node.label != '' {
+		if node.mode in [.absolute, .absolute_indirect, .index_absolute] && node.label != '' && node.operand == 0 {
 			// we already know the label exists
 			for l in labels {
 				// if label.b matches node.label, the address becomes label.b
+				if l.b == node.label {
+					s << opcodes[insts.index(inst)]
+					s << u8(l.a)
+					s << u8(l.a >> 8)
+				}
 			}
+
+			continue // the outer loop
+		}
+
+		if node.mode == .implied {
+			s << opcodes[insts.index(inst)]
+			continue
 		}
 
 	}

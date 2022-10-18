@@ -18,4 +18,5 @@ pub fn compile_file(filename string) {
 	nodes := parse.parse(tokens)
 	check.check(nodes) // do some sort of typechecking
 	binary := gen.gen(nodes)
+	println(binary)
 }
