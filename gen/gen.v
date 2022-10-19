@@ -366,7 +366,8 @@ pub fn gen(nodes []parse.Node) []u8 {
 		inst := Inst{node.inst, node.mode, node.register}
 
 		if node.node == .label {
-			labels << Label {u16(s.len), node.label}
+		// adjust for stack and zero page and inst
+			labels << Label {u16(s.len)+0x1FF+1, node.label}
 			continue
 		}
 
@@ -384,9 +385,28 @@ pub fn gen(nodes []parse.Node) []u8 {
 			continue // the outer loop
 		}
 
-		if node.mode == .implied {
-			s << opcodes[insts.index(inst)]
-			continue
+		match node.mode {
+			.implied, .accumulator {
+				s << opcodes[insts.index(inst)]
+				continue
+			}
+			.immediate {
+				s << opcodes[insts.index(inst)]
+				s << u8(node.operand)
+				continue
+			}
+			.absolute, .absolute_indirect, .index_absolute {
+				s << opcodes[insts.index(inst)]
+				s << u8(node.operand)
+				s << u8(node.operand >> 8)
+				continue
+			}
+			.zero_page, .yindirect_zero_page, .xzero_page_indirect, .index_zero_page {
+				s << opcodes[insts.index(inst)]
+				s << u8(node.operand)
+				continue
+			}
+			else { continue }
 		}
 
 	}

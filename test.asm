@@ -1,5 +1,5 @@
 ; this is a comment
-NOP
-testlabel:
-LDA #$FF
+NOP ; $0200
+testlabel: 
+LDA $0005 ; 0201
 JMP testlabel
