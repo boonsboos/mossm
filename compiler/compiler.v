@@ -18,5 +18,16 @@ pub fn compile_file(filename string) {
 	nodes := parse.parse(tokens)
 	check.check(nodes) // do some sort of typechecking
 	binary := gen.gen(nodes)
-	println(binary)
+	
+	file := os.create(filename.all_before('.')+'.6502') or {
+		eprintln('failed to create output file')
+		exit(1)
+	}
+
+	file.write(binary) or {
+		eprintln('failed to write to output file')
+		exit(1)
+	}
+
+	file.close()
 }
