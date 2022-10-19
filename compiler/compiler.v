@@ -19,15 +19,15 @@ pub fn compile_file(filename string) {
 	check.check(nodes) // do some sort of typechecking
 	binary := gen.gen(nodes)
 	
-	file := os.create(filename.all_before('.')+'.6502') or {
+	mut out := os.create(filename.all_before_last('.')+'.6502') or {
 		eprintln('failed to create output file')
 		exit(1)
 	}
 
-	file.write(binary) or {
+	out.write(binary) or {
 		eprintln('failed to write to output file')
 		exit(1)
 	}
 
-	file.close()
+	out.close()
 }
